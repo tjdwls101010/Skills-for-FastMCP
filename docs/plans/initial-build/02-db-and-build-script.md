@@ -44,7 +44,7 @@ meta(key TEXT PRIMARY KEY, value TEXT)  -- snapshot_date, built_at, source_repo,
 
 ### Keep as-is
 
-CLI shape (`--src --out [--commit] [--mirror]`), build-to-temp + atomic move, frontmatter parsing, the fail-fast `die()` posture, the final report printing per-section counts (mind the tuple-unpack orientation bug fixed in the fork base's history: iterate `for _subdir, pkg in INCLUDE` orientation carefully).
+CLI shape (`--src --out [--commit]`; **drop the LangChain build script's `--mirror` flag** — there is no mirror in this repo, D1/D13), build-to-temp + atomic move, frontmatter parsing, the fail-fast `die()` posture, the final report printing per-section counts (mind the tuple-unpack orientation bug fixed in the fork base's history: iterate `for _subdir, pkg in INCLUDE` orientation carefully).
 
 ## scripts/validate_docs_db.py adaptations
 
@@ -64,7 +64,13 @@ Default `--db` path: `.claude/skills/fastmcp/references/docs_official.db`.
 
 ## scripts/validate_evidence.py adaptations
 
-Fork `reference/validate_evidence.py` nearly verbatim; it is already slim. Change the constants: plugin root `plugins/skills-for-fastmcp`, expected names `skills-for-fastmcp`, marketplace source `./plugins/skills-for-fastmcp`, canonical tree `.claude/skills/fastmcp`. Checks remain: plugin/marketplace name coupling, `## [x.y.z]` CHANGELOG heading for the plugin version, and full-tree byte-identity of the plugin mirror (including the .db blob).
+Fork `reference/validate_evidence.py`, but **drop its plugin-mirror machinery** — there is no mirror in this repo (D1/D13). Constants: skill tree `.claude/skills/fastmcp`, plugin manifest `.claude-plugin/plugin.json`, marketplace `.claude-plugin/marketplace.json`, expected name `skills-for-fastmcp`. Checks kept and added:
+
+1. **Name coupling** — `plugin.json.name`, the marketplace top-level `name`, and the marketplace plugin entry `name` all equal `skills-for-fastmcp`.
+2. **Single-source wiring** (replaces the byte-identity check) — `plugin.json.skills` contains `./.claude/skills/fastmcp`, the referenced directory exists and holds a `SKILL.md`, and the marketplace plugin entry `source` is `./`. This is what guards the packaging now that there is no mirror.
+3. **CHANGELOG coupling** — a `## [x.y.z]` heading matches `plugin.json.version`.
+
+Removed: full-tree sha256 byte-identity of the plugin mirror (and its `.db` blob) — no longer applicable.
 
 ## Expected build command
 
@@ -72,8 +78,7 @@ Fork `reference/validate_evidence.py` nearly verbatim; it is already slim. Chang
 python3 scripts/build_docs_db.py \
   --src .tmp/docs_fastmcp \
   --out .claude/skills/fastmcp/references/docs_official.db \
-  --commit <source-commit-hash> \
-  --mirror plugins/skills-for-fastmcp/skills/fastmcp/references/docs_official.db
+  --commit <source-commit-hash>
 python3 scripts/validate_docs_db.py
 ```
 

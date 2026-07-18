@@ -32,7 +32,7 @@ Transplant of the Skills-for-Langchain v1.2.0 architecture (forcing function + d
 | `scripts/build_docs_db.py` | docs/plans/initial-build/02 | planned |
 | `scripts/validate_docs_db.py` | docs/plans/initial-build/02 | planned |
 | `scripts/validate_evidence.py` | docs/plans/initial-build/02 | planned |
-| Plugin mirror + marketplace + CI + README + wiki | docs/plans/initial-build/05 | planned |
+| Plugin packaging — root `.claude-plugin/plugin.json` + `marketplace.json`, single-source (no mirror) — + CI + README + wiki | docs/plans/initial-build/05 | planned |
 
 ## Validation
 
@@ -41,3 +41,4 @@ Three layers per `docs/plans/initial-build/06-validation.md`: mechanical (build 
 ## Change history
 
 - 2026-07-18 — Planning session (harness-creator): interview completed; corpus, consultant scope, dimensions, tooling strategy, and scaffolding agreed; plan docs 00–07 written; repo initialized and pushed. No components generated.
+- 2026-07-18 — Plan revision: dropped the byte-identical `plugins/` mirror in favor of single-source packaging (root `plugin.json` `skills` path + marketplace-root `source: "./"`); see 00 D13. Removed the mirror byte-identity check and `--mirror`/re-copy steps across docs 00, 02, 03, 05, 06, 07. No components generated.

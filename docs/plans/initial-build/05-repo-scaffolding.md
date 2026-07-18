@@ -15,7 +15,8 @@ Skills-for-FastMCP/
 │               ├── consultant.md        # per 04
 │               └── docs_official.db     # per 02
 ├── .claude-plugin/
-│   └── marketplace.json
+│   ├── plugin.json                      # manifest; skills: ["./.claude/skills/fastmcp"] (D13)
+│   └── marketplace.json                 # one entry, source "./" → repo root (D13)
 ├── .github/
 │   └── workflows/
 │       └── validate.yml
@@ -32,12 +33,6 @@ Skills-for-FastMCP/
 │       ├── Coverage-and-Limits.md
 │       ├── Customization.md
 │       └── Maintenance-and-Release.md
-├── plugins/
-│   └── skills-for-fastmcp/
-│       ├── .claude-plugin/
-│       │   └── plugin.json
-│       └── skills/
-│           └── fastmcp/                 # byte-identical mirror of .claude/skills/fastmcp/
 └── scripts/
     ├── build_docs_db.py
     ├── validate_docs_db.py
@@ -46,9 +41,9 @@ Skills-for-FastMCP/
 
 `.tmp/docs_fastmcp/` (the docs snapshot / re-clone) exists locally but is gitignored.
 
-## plugin.json
+## .claude-plugin/plugin.json (repo root)
 
-Model on the Skills-for-Langchain plugin.json with these values:
+Model on the Skills-for-Langchain plugin.json, with the added `skills` path that makes `.claude/skills/fastmcp/` load as this plugin's skill (D13):
 
 ```json
 {
@@ -61,15 +56,24 @@ Model on the Skills-for-Langchain plugin.json with these values:
   "homepage": "https://github.com/tjdwls101010/Skills-for-FastMCP",
   "repository": "https://github.com/tjdwls101010/Skills-for-FastMCP",
   "license": "MIT",
-  "keywords": ["fastmcp", "mcp", "mcp-server", "python", "model-context-protocol", "claude-code"]
+  "keywords": ["fastmcp", "mcp", "mcp-server", "python", "model-context-protocol", "claude-code"],
+  "skills": ["./.claude/skills/fastmcp"]
 }
 ```
 
-marketplace.json mirrors the Skills-for-Langchain one: name `skills-for-fastmcp`, single plugin entry with source `./plugins/skills-for-fastmcp`.
+## .claude-plugin/marketplace.json (repo root)
 
-## Mirror rule
+Marketplace `name` `skills-for-fastmcp`, owner block, and a single plugin entry that resolves to the repo root:
 
-The plugin skill tree must be byte-identical to the canonical tree at all times — enforce with `diff -rq .claude/skills/fastmcp plugins/skills-for-fastmcp/skills/fastmcp` after every edit, and mechanically by `validate_evidence.py` (sha256 over every file including the .db). The standing gotcha from the LangChain repo: editing the canonical file and forgetting the mirror re-copy is the #1 CI failure mode.
+```json
+{ "name": "skills-for-fastmcp", "source": "./" }
+```
+
+`source: "./"` resolves relative to the marketplace root (the directory containing `.claude-plugin/`, i.e. the repo root). `strict` is left at its default `true`, so the root `plugin.json` above is the authority for components and its `skills` path loads `.claude/skills/fastmcp`. Do **not** re-declare `skills` in the entry unless you are applying the strict:false fallback described in 00 D13.
+
+## Single-source rule (no mirror)
+
+The skill exists once, at `.claude/skills/fastmcp/`. There is **no** `plugins/` mirror to keep in sync (D1/D13) — the LangChain repo's #1 CI failure mode (editing the canonical file and forgetting the mirror re-copy) is designed out. `validate_evidence.py` instead asserts the single-source wiring: `plugin.json.skills` points at `./.claude/skills/fastmcp`, the marketplace entry `source` is `./`, and the three names agree (per 02). Edit the skill in one place and you are done.
 
 ## CI — .github/workflows/validate.yml
 
@@ -88,7 +92,7 @@ Keep-a-Changelog style, starting at:
 ### Added
 - fastmcp skill: forcing function, docs_official.db (FastMCP <version> snapshot, ~180 docs + changelog table), consultant persona for MCP server design.
 - Build/validation tooling: build_docs_db.py, validate_docs_db.py, validate_evidence.py; CI validate workflow.
-- Plugin packaging (skills-for-fastmcp) + marketplace.
+- Single-source plugin packaging (skills-for-fastmcp): root plugin.json + marketplace, skill served from `.claude/skills/fastmcp` with no mirror.
 ```
 
 ## README.md outline
@@ -101,7 +105,7 @@ Follow the Skills-for-Langchain README structure: what it is (one paragraph, bot
 - **How-It-Works.md** — the forcing function, DB schema, query examples, consultant flow; adapted from the LangChain wiki equivalent.
 - **Coverage-and-Limits.md** — corpus table from 01, exclusions and why, snapshot/version provenance, the v4 tripwire.
 - **Customization.md** — changing the corpus (INCLUDE list), adding sections, rebuilding, editing dimensions.
-- **Maintenance-and-Release.md** — refresh workflow, SemVer/CHANGELOG coupling, mirror rule, release steps.
+- **Maintenance-and-Release.md** — refresh workflow, SemVer/CHANGELOG coupling, single-source rule (no mirror), release steps.
 
 ## .claude/harness-spec.md
 

@@ -26,8 +26,8 @@ Execution driver for the implementation session. Work top to bottom; every item 
 
 ## Phase E — Scaffolding (spec: 05)
 
-- [ ] E1. plugin.json, marketplace.json, LICENSE (MIT), CHANGELOG.md `[1.0.0]`, README.md per 05.
-- [ ] E2. Plugin mirror: copy `.claude/skills/fastmcp/` → `plugins/skills-for-fastmcp/skills/fastmcp/`. → verify: `diff -rq` silent.
+- [ ] E1. `.claude-plugin/plugin.json` (with `"skills": ["./.claude/skills/fastmcp"]`) + `.claude-plugin/marketplace.json` (single entry, `source: "./"`), LICENSE (MIT), CHANGELOG.md `[1.0.0]`, README.md per 05.
+- [ ] E2. Verify single-source plugin load (D13) — no mirror copy exists to make. → verify: `--plugin-dir <repo>` lists the `fastmcp` skill **and** a local marketplace install (`/plugin marketplace add <repo>` → install) lists it too; if either fails, apply the strict:false fallback from 00 D13.
 - [ ] E3. CI workflow `.github/workflows/validate.yml` per 05.
 - [ ] E4. Wiki pages (5) per 05.
 - [ ] E5. `python3 scripts/validate_evidence.py` → passes.
@@ -43,11 +43,11 @@ Execution driver for the implementation session. Work top to bottom; every item 
 - [ ] G1. Whitespace check (`git show --check` on staged work, or `git diff --check` before commit).
 - [ ] G2. Commit on a branch (e.g. `build/v1.0.0`), push, open PR to main; confirm CI green.
 - [ ] G3. Merge per user preference (ask). Tag `v1.0.0` on main.
-- [ ] G4. Post-release smoke: fresh dir, `claude --plugin-dir` (or marketplace install) loads the skill.
+- [ ] G4. Post-release smoke: fresh dir, `claude --plugin-dir <repo>` (or marketplace install) loads the skill.
 - [ ] G5. Update the user's project memory (Skills-for-Langchain project memory holds the cross-project index): record that Skills-for-FastMCP v1.0.0 shipped, plus any new build gotchas discovered.
 
 ## Standing rules for the session
 
 - Follow the CLAUDE.md conventions of the Skills-for-Langchain repo in spirit (think before coding, simplicity first, surgical changes, goal-driven execution) — copy that CLAUDE.md into this repo as part of Phase E if it doesn't already exist, adapted references included.
 - Any deviation from docs 00–06 discovered mid-implementation: stop, note it, and confirm with the user via a self-contained AskUserQuestion before diverging (the plan is an agreement, not a suggestion).
-- Environment gotchas: `python3` not `python`; `grep` aliased to `ugrep`; no `timeout` on macOS; mirror re-copy after every canonical edit.
+- Environment gotchas: `python3` not `python`; `grep` aliased to `ugrep`; no `timeout` on macOS. (No mirror re-copy step — single source, D13.)
