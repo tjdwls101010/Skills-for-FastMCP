@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "skills-for-fastmcp",
+  "displayName": "Skills for FastMCP",
+  "version": "1.0.0",
+  "description": "Current-API guidance and MCP-server architecture consulting for FastMCP 3.x (Python).",
+  "author": { "name": "Seongjin (tjdwls101010)", "email": "chunghun1@naver.com", "url": "https://github.com/tjdwls101010" },
+  "homepage": "https://github.com/tjdwls101010/Skills-for-FastMCP",
+  "repository": "https://github.com/tjdwls101010/Skills-for-FastMCP",
+  "license": "MIT",
+  "keywords": ["fastmcp", "mcp", "mcp-server", "python", "model-context-protocol", "claude-code"]
+}
