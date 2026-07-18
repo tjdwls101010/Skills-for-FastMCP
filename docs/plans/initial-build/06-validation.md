@@ -6,7 +6,7 @@ Three layers, from cheap to expensive. Layers 1–2 are mandatory before release
 
 - `python3 scripts/build_docs_db.py …` self-validation: doc_count band 150–220, changelog ≥ 80 blocks, FTS smoke query, meta completeness. Build fails atomically (temp file, no partial DB shipped).
 - `python3 scripts/validate_docs_db.py`: the full check list in 02 (schema, bands, no v2/apps/import leakage, `SkillsDirectoryProvider` and `on_duplicate` regressions, FTS answers, meta).
-- `python3 scripts/validate_evidence.py`: plugin/marketplace naming, CHANGELOG heading for the current version, byte-identical plugin mirror.
+- `python3 scripts/validate_evidence.py`: plugin/marketplace naming, single-source wiring (`plugin.json.skills` → `./.claude/skills/fastmcp`; marketplace entry `source: "./"`), CHANGELOG heading for the current version. (No mirror byte-identity check — D1/D13.)
 - `git show --check` on the release commit (trailing whitespace).
 
 ## Layer 2 — Content spot checks (manual, once per build)
@@ -24,7 +24,7 @@ Run these queries against the built DB and eyeball the results:
 Headless probe, same technique as the LangChain v1.2.0 release evidence. From a scratch project dir:
 
 ```bash
-claude -p "<probe prompt>" --plugin-dir <repo>/plugins/skills-for-fastmcp \
+claude -p "<probe prompt>" --plugin-dir <repo> \
   --dangerously-skip-permissions --output-format stream-json
 ```
 
@@ -46,4 +46,4 @@ Stale reflexes that must NOT appear anywhere in the transcripts: constructor `ho
 2. Layer 2 spot checks recorded (paste key outputs into the PR description or a release note).
 3. Layer 3 probes 1–2 pass, or the user explicitly waives Layer 3.
 4. `.claude/harness-spec.md` updated to implemented state with a Change history entry.
-5. Plugin installable: `claude plugin` flow or `--plugin-dir` smoke test loads the skill listing.
+5. Plugin installable **both ways**: a local marketplace install (`/plugin marketplace add <repo>` → install) **and** `--plugin-dir <repo>` load the `fastmcp` skill. This is the acceptance gate for the single-source wiring (D13) — confirm it genuinely loads in each path; if either fails, apply the strict:false fallback from 00 D13.

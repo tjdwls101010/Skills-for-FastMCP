@@ -1,6 +1,6 @@
 # 03 — SKILL.md specification
 
-Target: `.claude/skills/fastmcp/SKILL.md` (canonical; byte-identical copy in the plugin mirror). Structural template: `docs/plans/initial-build/reference/SKILL.md` (the Skills-for-Langchain v1.2.0 SKILL.md) — reuse its section architecture, rewrite every sentence for FastMCP. Do not copy LangChain-specific prose.
+Target: `.claude/skills/fastmcp/SKILL.md` (single source — no plugin mirror, D1/D13). Structural template: `docs/plans/initial-build/reference/SKILL.md` (the Skills-for-Langchain v1.2.0 SKILL.md) — reuse its section architecture, rewrite every sentence for FastMCP. Do not copy LangChain-specific prose.
 
 ## Frontmatter
 
@@ -70,4 +70,4 @@ Include the FTS5 syntax notes from the reference (quote multi-word phrases, `OR`
 
 ## Section 6 — Staying current
 
-DB-refresh workflow, mirroring the reference: re-clone docs → run build → run validators → re-verify the gotchas table against the new migration guides → bump plugin version + CHANGELOG → re-copy plugin mirror. Note the v4 tripwire explicitly: when the changelog table's newest version starts with `v4.`, the gotchas section and validate_docs_db.py's version assertion must be revisited in the same pass.
+DB-refresh workflow, following the reference: re-clone docs → run build → run validators → re-verify the gotchas table against the new migration guides → bump the plugin version (`.claude-plugin/plugin.json`) + CHANGELOG. (No mirror re-copy step — single source, D1/D13.) Note the v4 tripwire explicitly: when the changelog table's newest version starts with `v4.`, the gotchas section and validate_docs_db.py's version assertion must be revisited in the same pass.
